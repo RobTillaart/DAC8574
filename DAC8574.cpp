@@ -106,12 +106,16 @@ uint16_t DAC8574::read(uint8_t channel)
   uint8_t lowByte  = 0;
   //  uint8_t control  = 0;  //  not used.
 
-  uint8_t n = _wire->requestFrom(_address, uint8_t(3));
-  if (n == 3)
+  uint8_t control = _control | (channel << 1);
+  _wire->beginTransmission(_address);
+  _wire->write(control);
+  _error = _wire->endTransmission();
+
+  uint8_t n = _wire->requestFrom(_address, uint8_t(2));
+  if (n == 2)
   {
     highByte = _wire->read();
     lowByte  = _wire->read();
-    _wire->read();    //  control  = _wire->read();  //  not used.
     _error = DAC8574_OK;
   }
   else
@@ -137,8 +141,11 @@ bool DAC8574::write(uint8_t channel, uint16_t * arr, uint8_t length)
     _error = DAC8574_BUFFER_ERROR;
     return false;
   }
+
   _wire->beginTransmission(_address);
-  _wire->write(_control);
+
+  uint8_t control = _control | (channel << 1);
+  _wire->write(control);
   for (int i = 0; i < length; i++)
   {
     uint8_t lowByte = arr[i] & 0xFF;
@@ -173,7 +180,9 @@ bool DAC8574::setPercentage(uint8_t channel, float percentage)
 
 float DAC8574::getPercentage(uint8_t channel)
 {
-  return read(channel) * 0.0015259022;  //  === / 655.35;
+  //  return read(channel) * 0.0015259022;  //  === / 655.35;
+  //  faster
+  return lastWrite(channel) * 0.0015259022;  //  === / 655.35;
 }
 
 
@@ -226,7 +235,8 @@ void DAC8574::powerDown(uint8_t pdMode)
       pdMask  = 0xC000;
       break;
   }
-  //  specific power down code.
+  //  DAC8574_MODE_NORMAL << 4 + 
+  //  specific power down code  (bit 7)
   _control = 0x11;
   write(0, pdMask);
 }

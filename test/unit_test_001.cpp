@@ -72,7 +72,7 @@ unittest(test_constructor)
   assertTrue(dev.begin());
 
   assertTrue(dev.isConnected());
-  assertEqual(0, dev.lastWrite());
+  assertEqual(0, dev.lastWrite(0));
   assertEqual(DAC8574_OK, dev.lastError());
 }
 

@@ -87,7 +87,7 @@ protected:
   uint8_t  _address;
   uint8_t  _maxChannel;
   uint8_t  _control;
-  uint16_t _dac;
+  uint16_t _dac[4];
   int      _error;
 
   TwoWire* _wire;

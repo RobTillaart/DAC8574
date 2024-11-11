@@ -93,7 +93,7 @@ void test_write()
   for (uint16_t i = 0; i < 1000; i++)
   {
     uint16_t val = i;
-    dev.write(val);
+    dev.write(0, val);
   }
   stop = micros();
 
@@ -108,7 +108,7 @@ void test_read()
   start = micros();
   for (uint16_t i = 0; i < 1000; i++)
   {
-    x = dev.read();
+    x = dev.read(0);
   }
   stop = micros();
 
@@ -127,7 +127,7 @@ void test_write_array(uint32_t clk)
   start = micros();
   for (uint16_t i = 0; i < 1000; i++)
   {
-    dev.write(arr, 10);
+    dev.write(0, arr, 10);
   }
   stop = micros();
 

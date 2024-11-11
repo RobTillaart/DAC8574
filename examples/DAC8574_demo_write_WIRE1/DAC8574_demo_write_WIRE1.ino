@@ -47,7 +47,7 @@ void test_DAC()
   {
     uint16_t val = 32767 + 32767 * sin(i * 0.01);
     Serial.println(val);
-    dev.write(val);
+    dev.write(0, val);
     delay(1);              //  just to slow the effect
   }
   Serial.println();

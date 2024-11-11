@@ -49,7 +49,7 @@ void test_DAC()
   {
     arr[i] = random(65535);
     Serial.println(arr[i]);
-    dev.write(arr, 14);
+    dev.write(0, arr, 14);
   }
   Serial.println();
 }

@@ -19,9 +19,12 @@ DAC8574::DAC8574(uint8_t address, TwoWire *wire)
 {
   _address    = address;
   _wire       = wire;
-  _dac        = 0;
   _error      = DAC8574_OK;
   _maxChannel = 4;
+  for (int channel = 0; channel < _maxChannel; channel++)
+  {
+    _dac[channel] = 0;
+  }
   setWriteMode(DAC8574_MODE_NORMAL);
 }
 
@@ -73,7 +76,7 @@ bool DAC8574::write(uint8_t channel, uint16_t value)
   uint8_t control = _control | (channel << 1);
 
   _wire->beginTransmission(_address);
-  _wire->write(_control);
+  _wire->write(control);
   _wire->write(highByte);
   _wire->write(lowByte);
   _error = _wire->endTransmission();
@@ -98,7 +101,7 @@ uint16_t DAC8574::lastWrite(uint8_t channel)
 
 uint16_t DAC8574::read(uint8_t channel)
 {
-  //  if (channel >= _maxChannel)  //  error ??
+  if (channel >= _maxChannel) return 0xFFFF;  //  error ??
   uint8_t highByte = 0;
   uint8_t lowByte  = 0;
   //  uint8_t control  = 0;  //  not used.
@@ -225,7 +228,7 @@ void DAC8574::powerDown(uint8_t pdMode)
   }
   //  specific power down code.
   _control = 0x11;
-  write(pdMask);
+  write(0, pdMask);
 }
 
 

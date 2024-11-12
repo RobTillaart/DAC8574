@@ -41,10 +41,9 @@
 
 //  POWER DOWN MODI
 #define DAC8574_PD_LOW_POWER        0x00
-#define DAC8574_PD_FAST             0x01
-#define DAC8574_PD_1_KOHM           0x02
-#define DAC8574_PD_100_KOHM         0x03
-#define DAC8574_PD_HI_Z             0x04
+#define DAC8574_PD_1_KOHM           0x01
+#define DAC8574_PD_100_KOHM         0x02
+#define DAC8574_PD_HI_Z             0x03
 
 
 class DAC8574

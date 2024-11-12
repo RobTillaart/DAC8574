@@ -181,8 +181,8 @@ bool DAC8574::setPercentage(uint8_t channel, float percentage)
 float DAC8574::getPercentage(uint8_t channel)
 {
   //  return read(channel) * 0.0015259022;  //  === / 655.35;
-  //  faster
-  return lastWrite(channel) * 0.0015259022;  //  === / 655.35;
+  //  faster from cache
+  return _dac[channel] * 0.0015259022;  //  === / 655.35;
 }
 
 
@@ -222,9 +222,6 @@ void DAC8574::powerDown(uint8_t pdMode)
     case DAC8574_PD_LOW_POWER:
       pdMask  = 0x0000;
       break;
-    case DAC8574_PD_FAST:
-      pdMask  = 0x2000;
-      break;
     case DAC8574_PD_1_KOHM:
       pdMask  = 0x4000;
       break;
@@ -235,9 +232,8 @@ void DAC8574::powerDown(uint8_t pdMode)
       pdMask  = 0xC000;
       break;
   }
-  //  DAC8574_MODE_NORMAL << 4 + 
-  //  specific power down code  (bit 7)
-  _control = 0x11;
+  //  DAC8574_MODE_NORMAL + power down bit 7
+  _control = (DAC8574_MODE_NORMAL << 4) + 0x01;
   write(0, pdMask);
 }
 

@@ -50,7 +50,12 @@ bool DAC8574::isConnected()
 {
   _wire->beginTransmission(_address);
   _error = _wire->endTransmission();  //  default == 0 ==> DAC8574_OK
-  return (_error == DAC8574_OK);
+  if (_error != 0)
+  {
+    _error = DAC8574_I2C_ERROR;
+    return false;
+  }
+  return true;
 }
 
 
@@ -80,12 +85,12 @@ bool DAC8574::write(uint8_t channel, uint16_t value)
   _wire->write(highByte);
   _wire->write(lowByte);
   _error = _wire->endTransmission();
-
   if (_error != 0)
   {
     _error = DAC8574_I2C_ERROR;
     return false;
   }
+
   _error = DAC8574_OK;
   _dac[channel] = value;
   return true;
@@ -94,35 +99,40 @@ bool DAC8574::write(uint8_t channel, uint16_t value)
 
 uint16_t DAC8574::lastWrite(uint8_t channel)
 {
-  //  if (channel >= _maxChannel)  //  ??
+  if (channel >= _maxChannel) 
+  {
+    _error = DAC8574_CHANNEL_ERROR;
+    return 0xFFFF;
+  }
   return _dac[channel];
 }
 
 
 uint16_t DAC8574::read(uint8_t channel)
 {
-  if (channel >= _maxChannel) return 0xFFFF;  //  error ??
-  uint8_t highByte = 0;
-  uint8_t lowByte  = 0;
-  //  uint8_t control  = 0;  //  not used.
+  if (channel >= _maxChannel) 
+  {
+    _error = DAC8574_CHANNEL_ERROR;
+    return 0;
+  }
 
   uint8_t control = _control | (channel << 1);
   _wire->beginTransmission(_address);
   _wire->write(control);
   _error = _wire->endTransmission();
-
-  uint8_t n = _wire->requestFrom(_address, uint8_t(2));
-  if (n == 2)
-  {
-    highByte = _wire->read();
-    lowByte  = _wire->read();
-    _error = DAC8574_OK;
-  }
-  else
+  if (_error != 0)
   {
     _error = DAC8574_I2C_ERROR;
     return 0;
   }
+  uint8_t n = _wire->requestFrom(_address, uint8_t(2));
+  if (n != 2)
+  {
+    _error = DAC8574_I2C_ERROR;
+    return 0;
+  }
+  uint8_t highByte = _wire->read();
+  uint8_t lowByte  = _wire->read();
   _error = DAC8574_OK;
   uint16_t value = highByte * 256 + lowByte;
   return value;
@@ -154,12 +164,12 @@ bool DAC8574::write(uint8_t channel, uint16_t * arr, uint8_t length)
     _wire->write(lowByte);
   }
   _error = _wire->endTransmission();
-
   if (_error != 0)
   {
     _error = DAC8574_I2C_ERROR;
     return false;
   }
+
   _error = DAC8574_OK;
   _dac[channel] = arr[length - 1];
   return true;
@@ -212,7 +222,7 @@ uint8_t DAC8574::getWriteMode()
 //
 //  POWER DOWN PART
 //
-void DAC8574::powerDown(uint8_t pdMode)
+bool DAC8574::powerDown(uint8_t pdMode)
 {
   uint16_t pdMask = 0x0000;
   //  table 6, page 22.
@@ -234,14 +244,14 @@ void DAC8574::powerDown(uint8_t pdMode)
   }
   //  DAC8574_MODE_NORMAL + power down bit 7
   _control = (DAC8574_MODE_NORMAL << 4) + 0x01;
-  write(0, pdMask);
+  return write(0, pdMask);
 }
 
 
-void DAC8574::wakeUp(uint8_t channel, uint16_t value)
+bool DAC8574::wakeUp(uint8_t channel, uint16_t value)
 {
   setWriteMode(DAC8574_MODE_NORMAL);
-  write(channel, value);
+  return write(channel, value);
 }
 
 

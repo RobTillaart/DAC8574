@@ -210,8 +210,10 @@ The last value written will be remembered in **lastWrite()**.
 
 To investigate: Mixes also with broadcast ==> complex API.
 
-- **void powerDown(uint8_t pdMode = 0)** default low power.
-- **void wakeUp(uint16_t value = 0)** wake up, DAC value set to zero by default.
+- **bool powerDown(uint8_t pdMode = 0)** default low power.
+returns false on failure.
+- **bool wakeUp(uint16_t value = 0)** wake up, DAC value set to zero by default.
+returns false on failure.
 
 See table 8, page 27 datasheet for details.
 

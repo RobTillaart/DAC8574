@@ -75,8 +75,8 @@ public:
   uint8_t  getWriteMode();  // 0..4  from last write (cached)
 
   //       POWER DOWN (see defines above)
-  void     powerDown(uint8_t pdMode = DAC8574_PD_LOW_POWER);
-  void     wakeUp(uint8_t channel, uint16_t value = DAC8574_VALUE_00);
+  bool     powerDown(uint8_t pdMode = DAC8574_PD_LOW_POWER);
+  bool     wakeUp(uint8_t channel, uint16_t value = DAC8574_VALUE_00);
 
   //       ERROR HANDLING (see defines above)
   int      lastError();

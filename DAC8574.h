@@ -11,7 +11,7 @@
 #include "Arduino.h"
 #include "Wire.h"
 
-#define DAC8574_LIB_VERSION         (F("0.1.1"))
+#define DAC8574_LIB_VERSION         (F("0.1.0"))
 
 //  ERROR CODES
 #define DAC8574_OK                  0x00

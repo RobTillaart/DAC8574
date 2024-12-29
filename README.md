@@ -33,7 +33,7 @@ This can be used to change the DAC at a later moment.
 As said the library is experimental need to be tested with hardware.
 Feedback is always welcome, please open an issue.
 
-Kudos to Doctea for first tests.
+Kudos to doctea for first tests.
 
 
 ### Settling time
@@ -60,9 +60,9 @@ The DAC8574 support 2 addresses by means of an A0 address pin.
 |   0x4E    |  HIGH  |   LOW  |
 |   0x4F    |  HIGH  |  HIGH  |
 
-It might be possible to connect one address pin to an IO pin and 
-keep only of multi DAC's HIGH and the remaining LOW to support multiple devices.
-This is not tested, feedback welcome.
+Using pins A2 and A3 it should be possible to use up to 16 devices on the same bus, but this is not currently supported by this library.
+
+The datasheet states that the address is configured at power-on, so it is probably not possible to 'multiplex' these chips by adjusting the address pins during operation, but feedback welcome if you try this.
 
 
 ### I2C pull ups

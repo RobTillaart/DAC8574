@@ -121,7 +121,7 @@ unittest(test_setExtendedAddress)
     assertEqual(a2a3, dev.getExtendedAddress());
   }
   //  invalid
-  asssertFalse(dev.setExtendedAddress(0x04));
+  assertFalse(dev.setExtendedAddress(0x04));
 }
 
 

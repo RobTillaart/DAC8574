@@ -52,10 +52,10 @@ therefore, the update rate is limited by the I2C interface.
 ### Address
 
 The DAC8574 supports 4 addresses by means of an A0 and A1 address pin.
-Furthermore the device has two extended address pins A2 and A3 which should default 
+Furthermore the device has two extended address pins A2 and A3 which should by default 
 be connected to GND.
 
-|  Address  |   A0   |   A1   |
+|  Address  |   A1   |   A0   |
 |:---------:|:------:|:------:|
 |   0x4C    |   LOW  |   LOW  |
 |   0x4D    |   LOW  |  HIGH  |
@@ -75,7 +75,7 @@ Please note the A2 and A3 pins are not part of the I2C address but are part (2 b
 of the internal control byte. 
 These bits are not seen on an I2C scanner as part of the address.
 
-TODO verify working extended address.
+See section below for the pin mapping.
 
 - I2C address conflict?
 
@@ -231,12 +231,12 @@ of the internal control byte. See datasheet P18.
 if A2A3 > 3 the function returns false.
 - **uint8_t getExtendedAddress()** returns set value, default 0.
 
-|  A2A3  |   A2  |   A3  |
+|  A2A3  |   A3  |   A2  |
 |:------:|:-----:|:-----:|
-|   0    |   0   |   0   |
-|   1    |   1   |   0   |
-|   2    |   0   |   1   |
-|   3    |   1   |   1   |
+|   0    |  LOW  |  LOW  |
+|   1    |  LOW  | HIGH  |
+|   2    | HIGH  |  LOW  |
+|   3    | HIGH  | HIGH  |
 
 
 ### Power Down mode

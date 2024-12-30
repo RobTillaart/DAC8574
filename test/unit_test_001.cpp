@@ -117,7 +117,7 @@ unittest(test_setExtendedAddress)
   //  valid
   for (int a2a3 = 0; a2a3 < 4; a2a3++)
   {
-    asssertTrue(dev.setExtendedAddress(a2a3));
+    assertTrue(dev.setExtendedAddress(a2a3));
     assertEqual(a2a3, dev.getExtendedAddress());
   }
   //  invalid

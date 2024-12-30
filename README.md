@@ -13,6 +13,7 @@
 
 Arduino library for DAC8574, I2C, 4 channel, 16 bit DAC.
 
+
 ## Description
 
 **Experimental**
@@ -50,8 +51,9 @@ therefore, the update rate is limited by the I2C interface.
 
 ### Address
 
-The DAC8574 support 2 addresses by means of an A0 address pin.
-
+The DAC8574 supports 4 addresses by means of an A0 and A1 address pin.
+Furthermore the device has two extended address pins A2 and A3 which should default 
+be connected to GND.
 
 |  Address  |   A0   |   A1   |
 |:---------:|:------:|:------:|
@@ -60,22 +62,33 @@ The DAC8574 support 2 addresses by means of an A0 address pin.
 |   0x4E    |  HIGH  |   LOW  |
 |   0x4F    |  HIGH  |  HIGH  |
 
+The datasheet states that the address is configured at power-on, 
+so it is probably not possible to 'multiplex' these chips by adjusting the 
+address pins during operation, but feedback welcome if you try this.
 
-TODO README
 
+### Extended address
 
-Using pins A2 and A3 it should be possible to use up to 16 devices on the same bus, but this is not currently supported by this library.
+By using the A2 and A3 pins one can "extend" the address of the device, 
+effectively use up to 16 devices on the same I2C bus. 
+Please note the A2 and A3 pins are not part of the I2C address but are part (2 bits)
+of the internal control byte. 
+These bits are not seen on an I2C scanner as part of the address.
 
-The datasheet states that the address is configured at power-on, so it is probably not possible to 'multiplex' these chips by adjusting the address pins during operation, but feedback welcome if you try this.
+TODO verify working extended address.
+
+- I2C address conflict?
 
 
 ### I2C pull ups
 
 To be able to reach 1 MHz (ESP32) the pull ups need to be fairly strong.
-Preliminary tests (DAC8571) indicate that 2K work.
+Preliminary tests (DAC8571) indicate that 2K works.
 
 
 ### I2C performance
+
+TODO
 
 Extend table, use output of **DAC8574_performance.ino**
 
@@ -112,7 +125,6 @@ Test ESP32 - version 0.1.0
 |  1000000 |           |          |                |
 
 
-
 ### I2C multiplexing
 
 Sometimes you need to control more devices than possible with the default
@@ -131,7 +143,7 @@ too if they are behind the multiplexer.
 - https://github.com/RobTillaart/TCA9548
 
 
-### Related
+## Related
 
 - https://github.com/RobTillaart/AD5680 (18 bit DAC)
 - https://github.com/RobTillaart/DAC8550
@@ -210,6 +222,23 @@ max 14 values in one I2C call.
 The last value written will be remembered in **lastWrite()**.
 
 
+### Extended Address
+
+Please note the A2 and A3 pins are not part of the I2C address but are part (2 bits)
+of the internal control byte. See datasheet P18.
+
+- **bool setExtendedAddress(uint8_t A2A3)** returns true if A2A3 = 0, 1, 2, 3
+if A2A3 > 3 the function returns false.
+- **uint8_t getExtendedAddress()** returns set value, default 0.
+
+|  A2A3  |   A2  |   A3  |
+|:------:|:-----:|:-----:|
+|   0    |   0   |   0   |
+|   1    |   1   |   0   |
+|   2    |   0   |   1   |
+|   3    |   1   |   1   |
+
+
 ### Power Down mode
 
 To investigate: Mixes also with broadcast ==> complex API.
@@ -219,7 +248,7 @@ returns false on failure.
 - **bool wakeUp(uint16_t value = 0)** wake up, DAC value set to zero by default.
 returns false on failure.
 
-See table 8, page 27 datasheet for details.
+See datasheet table 8, page 27, for details.
 
 |  Power Down Mode       |  value  |  Meaning  |
 |:-----------------------|:-------:|:----------|

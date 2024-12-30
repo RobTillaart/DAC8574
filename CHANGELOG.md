@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [0.1.1] - 2024-12-30
+- add support for A2 and A3 extended address pins.
+  - **setExtendedAddress()** + **getExtendedAddress()**
+- correct clearing internal **control** bits, in case power down.
+- update keywords
+- update unit tests
+- update readme.md
+
+
 ## [0.1.0] - 2024-11-11
 - initial version (based upon DAC8571)
 

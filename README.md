@@ -60,6 +60,10 @@ The DAC8574 support 2 addresses by means of an A0 address pin.
 |   0x4E    |  HIGH  |   LOW  |
 |   0x4F    |  HIGH  |  HIGH  |
 
+
+TODO README
+
+
 Using pins A2 and A3 it should be possible to use up to 16 devices on the same bus, but this is not currently supported by this library.
 
 The datasheet states that the address is configured at power-on, so it is probably not possible to 'multiplex' these chips by adjusting the address pins during operation, but feedback welcome if you try this.

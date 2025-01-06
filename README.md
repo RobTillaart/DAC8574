@@ -88,9 +88,7 @@ Preliminary tests (DAC8571) indicate that 2K works.
 
 ### I2C performance
 
-TODO
-
-Extend table, use output of **DAC8574_performance.ino**
+Output of **DAC8574_performance.ino**
 
 Time in microseconds.  
 array == write(array, length)

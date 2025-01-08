@@ -34,7 +34,7 @@ This can be used to change the DAC at a later moment.
 As said the library is experimental need to be tested with hardware.
 Feedback is always welcome, please open an issue.
 
-Kudos to doctea for first tests.
+Kudos to doctea for first tests of the library.
 
 
 ### Settling time
@@ -52,8 +52,6 @@ therefore, the update rate is limited by the I2C interface.
 ### Address
 
 The DAC8574 supports 4 addresses by means of an A0 and A1 address pin.
-Furthermore the device has two extended address pins A2 and A3 which should by default 
-be connected to GND.
 
 |  Address  |   A1   |   A0   |
 |:---------:|:------:|:------:|
@@ -66,24 +64,31 @@ The datasheet states that the address is configured at power-on,
 so it is probably not possible to 'multiplex' these chips by adjusting the 
 address pins during operation, but feedback welcome if you try this.
 
+Furthermore the device has two extended address (so called in the datasheet) pins A2 
+and A3 which should by default be connected to GND. 
+Since 0.1.1 the library supports these two extra address bits, which enables more 
+DAC8574 devices on one I2C bus. See section below.
+
 
 ### Extended address
 
 By using the A2 and A3 pins one can "extend" the address of the device, 
 effectively use up to 16 devices on the same I2C bus. 
 Please note the A2 and A3 pins are not part of the I2C address but are part (2 bits)
-of the internal control byte. 
-These bits are not seen on an I2C scanner as part of the address.
+of the internal control byte.
 
-See section below for the pin mapping.
+The extended address pins (bits) are not seen by any I2C scanner as these (almost)
+always use an 8 bits address. The A2 A3 extended address lines are not used
+so this might result in anomalies during an I2C scan as multiple devices might
+answer. Feedback about this is welcome.
 
-- I2C address conflict?
+The A2 and A3 pins can be set with **setExtendedAddress()**, see section below.
 
 
 ### I2C pull ups
 
 To be able to reach 1 MHz (ESP32) the pull ups need to be fairly strong.
-Preliminary tests (DAC8571) indicate that 2K works.
+Preliminary tests (DAC8571 from same family) indicate that 2K works.
 
 
 ### I2C performance
@@ -190,7 +195,7 @@ No default, user must explicit set value.
 - **uint16_t lastWrite(uint8_t channel)** get last value written from cache (fast).
 - **uint16_t read(uint8_t channel)** get last written value from device.
 
-Percentage wrappers
+Percentage wrappers. Note these might give small rounding errors.
 
 - **void setPercentage(uint8_t channel, float perc)** set 0.00 .. 100.00.
 Value is constrained to 0..100
@@ -200,7 +205,7 @@ Value is constrained to 0..100
 ### Write modi
 
 The DAC8574 can be written in different modi (datasheet page 19).
-Not all modi are supported yet, these need testing.
+Not all modi are supported yet, these need investigation and testing.
 
 - **void setWriteMode(uint8_t mode = DAC8574_MODE_NORMAL)**
 - **uint8_t getWriteMode()**
@@ -219,20 +224,24 @@ Setting the mode will be applied for all writes until mode is changed.
 | other                    |  maps onto default **DAC8574_MODE_NORMAL**.
 
 
+
 ### Write multiple values - High speed mode.
 
 The maximum length depends on the internal I2C BUFFER of the board.
-For Arduino this is typical 32 bytes so it allows 14 values.
+For Arduino UNO this is typical 32 bytes so it allows 14 values.
 
-- **void write(uint16_t arr[n], uint8_t length)** Writes a buffer with 
+- **void write(uint8_t channel, uint16_t \* array, uint8_t length)** Writes a buffer with 
 max 14 values in one I2C call. 
-The last value written will be remembered in **lastWrite()**.
+The last value written will be cached in **lastWrite()**.
+
+Other boards may have larger I2C buffers so the hard coded limit of 14 should 
+be changed / removed in the future.
 
 
 ### Extended Address
 
 Please note the A2 and A3 pins are not part of the I2C address but are part (2 bits)
-of the internal control byte. See datasheet P18.
+of the internal control byte. See datasheet page 18.
 
 - **bool setExtendedAddress(uint8_t A2A3)** returns true if A2A3 = 0, 1, 2, 3
 if A2A3 > 3 the function returns false.
@@ -311,6 +320,8 @@ After the call to **lastError()** the error value is reset to DAC8574_OK.
 
 #### Could
 
+- adjust limit 14 of write(array) to something more dynamic
+  - make user responsible
 - add examples
 
 #### Wont
